@@ -24,5 +24,5 @@ export function ReviewList({ reviews }: ReviewListProps) {
         </div>
       ))}
     </div>
-  );
+  )
 }
