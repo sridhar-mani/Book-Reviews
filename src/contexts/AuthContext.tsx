@@ -22,35 +22,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      fetchUser();
-    } else {
-      setIsLoading(false);
-    }
+    const fetchUser = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        try {
+          const { data } = await axios.get('http://localhost:3001/api/auth/me');
+          setUser(data);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    };
+    fetchUser();
   }, []);
-
-  const fetchUser = async () => {
-    try {
-      const { data } = await axios.get('http://localhost:3001/api/auth/me');
-      setUser(data);
-    } catch (error) {
-      localStorage.removeItem('token');
-      delete axios.defaults.headers.common['Authorization'];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  
   const login = async (email: string, password: string) => {
+    try {
     const { data } = await axios.post('http://localhost:3001/api/auth/login', {
       email,
-      password,
+      password
     });
+    console.log(email,password)
     localStorage.setItem('token', data.token);
     axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-    setUser(data.user);
+    setUser(data.user);}catch(error){
+      console.log(error)
+    }
   };
 
   const register = async (email: string, password: string, name: string) => {

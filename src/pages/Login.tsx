@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Button } from '../../components/ui/button';
-import { Input } from '../../components/ui/input';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { LogIn } from 'lucide-react';
 
@@ -16,6 +16,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      console.log(login)
       await login(email, password);
       navigate('/books');
     } catch (err) {

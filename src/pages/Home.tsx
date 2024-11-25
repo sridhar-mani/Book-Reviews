@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { Button } from '../../components/ui/button';
+import { Button } from '../components/ui/button';
 import { BookOpen } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext'; 
 
 export default function Home() {
   const { user } = useAuth();
@@ -15,23 +15,28 @@ export default function Home() {
         rate books, and connect with fellow book lovers.
       </p>
       <div className="flex gap-4">
-        <Link to="/books">
-          <Button size="lg">
-            Browse Books
-          </Button>
-        </Link>
-        {user ? (
-          <Link to="/profile">
-            <Button variant="outline" size="lg">
-              View Profile
-            </Button>
-          </Link>
+        {!user ? (
+          <>
+            <Link to="/books">
+              <Button size="lg">
+                Browse Books
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="outline" size="lg">
+                Join Community
+              </Button>
+            </Link>
+          </>
         ) : (
-          <Link to="/register">
-            <Button variant="outline" size="lg">
-              Join Community
-            </Button>
-          </Link>
+          <>
+            {/* Add options for logged-in users here */}
+            <Link to="/profile">
+              <Button size="lg">
+                My Profile
+              </Button>
+            </Link>
+          </>
         )}
       </div>
     </div>

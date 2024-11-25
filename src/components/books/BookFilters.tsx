@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface BookFiltersProps {
   selectedGenre: string;
@@ -14,7 +14,7 @@ export function BookFilters({ selectedGenre, onGenreChange, genres }: BookFilter
           <SelectValue placeholder="Filter by genre" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">All Genres</SelectItem>
+          <SelectItem value="all">All Genres</SelectItem>
           {genres.map((genre) => (
             <SelectItem key={genre} value={genre}>
               {genre}
