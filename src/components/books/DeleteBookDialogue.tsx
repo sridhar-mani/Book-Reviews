@@ -3,32 +3,34 @@ import { Button } from '@/components/ui/button';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { Book } from '@/types';
 
 interface DeleteBookDialogProps {
-  bookId: string;
-  onBookDeleted: () => void;
+  book: Book;
+  open:boolean;
+  onBookUpdated: () => void;
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function DeleteBookDialog({ bookId, onBookDeleted }: DeleteBookDialogProps) {
+export function DeleteBookDialog({ book,open, onBookUpdated,onOpenChange }: DeleteBookDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`/api/books/${bookId}`);
+      console.log(book);
+      await axios.delete(`/api/books/${book.id}`);
       toast({ description: 'Book deleted successfully.' });
       queryClient.invalidateQueries('books');
-      onBookDeleted();
+      onBookUpdated();
     } catch (error) {
       toast({ description: 'Failed to delete book.', variant: 'destructive' });
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="destructive">Delete</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange = {onOpenChange}>
+
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Confirm Delete</DialogTitle>

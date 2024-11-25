@@ -19,10 +19,12 @@ const schema = z.object({
 
 interface EditBookDialogProps {
   book: any;
-  onBookUpdated: () => void;
+  open:boolean;
+  onBookUpdated: () => any;
+  onOpenChange: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function EditBookDialog({ book, onBookUpdated }: EditBookDialogProps) {
+export function EditBookDialog({ book,open, onBookUpdated,onOpenChange }: EditBookDialogProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { register, handleSubmit, formState: { errors } } = useForm({
@@ -36,17 +38,16 @@ export function EditBookDialog({ book, onBookUpdated }: EditBookDialogProps) {
       await axios.put(`/api/books/${book.id}`, data);
       toast({ description: 'Book updated successfully.' });
       queryClient.invalidateQueries('books');
+      onOpenChange(!open)
       onBookUpdated();
     } catch (error) {
+      console.log(error);
       toast({ description: 'Failed to update book.', variant: 'destructive' });
     }
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button>Edit</Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange = {onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Edit Book</DialogTitle>

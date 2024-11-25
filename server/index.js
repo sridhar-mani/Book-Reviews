@@ -164,13 +164,28 @@ app.put('/api/books/:bookId', authenticateToken, async (req, res) => {
         coverImage,
       },
     });
-    console.log(bookId); // Log the bookId to verify it's being received correctly
     res.json(book);
   } catch (error) {
     console.error('Error updating book:', error);
     res.status(400).json({ message: 'Invalid book data' });
   }
 });
+
+app.delete('/api/books/:bookId', authenticateToken, async (req, res) => {
+  try {
+    const { bookId } = req.params;
+    const { title, author, isbn, genre, description, coverImage } = req.body;
+    const book = await prisma.book.delete({
+      where: { id: bookId }
+    });
+
+    res.json(book);
+  } catch (error) {
+    console.error('Error updating book:', error);
+    res.status(400).json({ message: 'Invalid book data' });
+  }
+});
+
 
 // Review routes
 app.post('/api/books/:bookId/reviews', authenticateToken, async (req, res) => {

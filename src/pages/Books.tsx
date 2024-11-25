@@ -75,7 +75,7 @@ export default function Books() {
       </div>
       {paginatedBooks.length > 0 ? (
         <>
-          <BookGrid books={paginatedBooks} />
+          <BookGrid books={paginatedBooks} onBookUpdated={()=>console.log('done')}/>
           <Pagination
             currentPage={currentPage}
             totalPages={Math.ceil(filteredBooks.length / ITEMS_PER_PAGE)}
