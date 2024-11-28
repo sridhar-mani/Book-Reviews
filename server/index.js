@@ -187,22 +187,97 @@ app.delete('/api/books/:bookId', authenticateToken, async (req, res) => {
 });
 
 
-// Review routes
 app.post('/api/books/:bookId/reviews', authenticateToken, async (req, res) => {
+  const { bookId } = req.params;
+  const { rating, comment } = req.body;
+  const userId = req.user.id;
+
   try {
-    const { rating, comment } = req.body;
-    const { bookId } = req.params;
     const review = await prisma.review.create({
       data: {
         rating,
         comment,
-        userId: req.user.id,
-        bookId,
+        user: { connect: { id: userId } },
+        book: { connect: { id: bookId } },
+      },
+      include: {
+        user: { select: { id: true, name: true } },
       },
     });
-    res.json(review);
+    res.json({ review });
   } catch (error) {
-    res.status(400).json({ message: 'Invalid review data' });
+    console.error('Error creating review:', error);
+    res.status(500).json({ message: 'Failed to create review' });
+  }
+});
+
+app.get('/api/books/:bookId', async (req, res) => {
+  const { bookId } = req.params;
+
+  try {
+    const book = await prisma.book.findUnique({
+      where: { id: bookId },
+      include: {
+        reviews: {
+          include: {
+            user: { select: { id: true, name: true } },
+          },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
+    res.json({ book });
+  } catch (error) {
+    console.error('Error fetching book:', error);
+    res.status(500).json({ message: 'Failed to fetch book' });
+  }
+});
+app.put('/api/reviews/:reviewId', authenticateToken, async (req, res) => {
+  const { reviewId } = req.params;
+  const { rating, comment } = req.body;
+  const userId = req.user.id;
+
+  try {
+    // Verify ownership
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+
+    if (!review || review.userId !== userId) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    const updatedReview = await prisma.review.update({
+      where: { id: reviewId },
+      data: { rating, comment },
+    });
+    res.json({ review: updatedReview });
+  } catch (error) {
+    console.error('Error updating review:', error);
+    res.status(500).json({ message: 'Failed to update review' });
+  }
+});
+
+app.delete('/api/reviews/:reviewId', authenticateToken, async (req, res) => {
+  const { reviewId } = req.params;
+  const userId = req.user.id;
+
+  try {
+    const review = await prisma.review.findUnique({
+      where: { id: reviewId },
+    });
+
+    if (!review || review.userId !== userId) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    await prisma.review.delete({
+      where: { id: reviewId },
+    });
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting review:', error);
+    res.status(500).json({ message: 'Failed to delete review' });
   }
 });
 

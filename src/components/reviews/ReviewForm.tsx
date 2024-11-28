@@ -1,57 +1,44 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Textarea } from '../../../components/ui/textarea';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '../../../hooks/use-toast';
+import { StarRating } from '@/components/reviews/StarRating';
+import axios from 'axios';
 
 interface ReviewFormProps {
   bookId: string;
+  onReviewSubmitted: () => void;
 }
 
-export function ReviewForm({ bookId }: ReviewFormProps) {
-  const [rating, setRating] = useState(5);
+export function ReviewForm({ bookId, onReviewSubmitted }: ReviewFormProps) {
+  const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation(
-    () => {
-      return axios.post(`/api/books/${bookId}/reviews`, { rating, comment });
-    },
-    {
-      onSuccess: () => {
-        toast({ description: 'Review submitted successfully.' });
-        setRating(5);
-        setComment('');
-        queryClient.invalidateQueries(['book', bookId]);
-      },
-      onError: () => {
-        toast({ description: 'Failed to submit review.', variant: 'destructive' });
-      },
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    try {
+      await axios.post(`/api/books/${bookId}/reviews`, {
+        rating,
+        comment,
+      });
+      setRating(0);
+      setComment('');
+      onReviewSubmitted();
+    } catch (error) {
+      console.error('Failed to submit review:', error);
     }
-  );
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    mutation.mutate();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
         <label className="block text-sm font-medium mb-1">Rating</label>
-        <select
-          value={rating}
-          onChange={(e) => setRating(Number(e.target.value))}
-          className="mt-1 block w-full border rounded-md"
-        >
-          {[5, 4, 3, 2, 1].map((value) => (
-            <option key={value} value={value}>
-              {value} Star{value > 1 ? 's' : ''}
-            </option>
-          ))}
-        </select>
+        <StarRating
+          rating={rating}
+          onChange={setRating}
+          readonly={false}
+          size="md"
+        />
       </div>
       <div>
         <label className="block text-sm font-medium mb-1">Comment</label>
@@ -62,9 +49,7 @@ export function ReviewForm({ bookId }: ReviewFormProps) {
           placeholder="Write your review..."
         />
       </div>
-      <Button type="submit" disabled={mutation.isLoading}>
-        Submit Review
-      </Button>
+      <Button type="submit">Submit Review</Button>
     </form>
   );
 }

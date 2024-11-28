@@ -20,7 +20,12 @@ export interface Review {
   id: string;
   rating: number;
   comment: string;
-  user: User;
-  bookId: string;
   createdAt: string;
+  updatedAt: string;
+  user: {
+    id: string;
+    name: string;
+  };
+  userId: string;
+  bookId: string;
 }

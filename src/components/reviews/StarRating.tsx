@@ -1,53 +1,44 @@
-import { Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
+// src/components/reviews/StarRating.tsx
+import React from 'react';
+import { FaStar, FaRegStar } from 'react-icons/fa';
 
 interface StarRatingProps {
   rating: number;
-  maxRating?: number;
   size?: 'sm' | 'md' | 'lg';
-  onChange?: (rating: number) => void;
   readonly?: boolean;
+  onChange?: (rating: number) => void;
 }
 
 export function StarRating({
   rating,
-  maxRating = 5,
   size = 'md',
+  readonly = true,
   onChange,
-  readonly = false,
 }: StarRatingProps) {
-  const sizeClasses = {
-    sm: 'w-4 h-4',
-    md: 'w-5 h-5',
-    lg: 'w-6 h-6',
-  };
+  const [hoveredRating, setHoveredRating] = React.useState(0);
+  const stars = [1, 2, 3, 4, 5];
+
+  const iconSize = size === 'sm' ? 16 : size === 'lg' ? 32 : 24;
 
   return (
-    <div className="flex items-center gap-1">
-      {[...Array(maxRating)].map((_, index) => {
-        const starValue = index + 1;
-        const filled = starValue <= rating;
-
+    <div className="flex">
+      {stars.map((value) => {
+        const isFilled = value <= (hoveredRating || rating);
         return (
           <button
-            key={index}
+            key={value}
             type="button"
-            onClick={() => !readonly && onChange?.(starValue)}
-            className={cn(
-              'focus:outline-none transition-colors',
-              readonly ? 'cursor-default' : 'cursor-pointer hover:scale-110'
-            )}
+            onClick={() => !readonly && onChange && onChange(value)}
+            onMouseEnter={() => !readonly && setHoveredRating(value)}
+            onMouseLeave={() => !readonly && setHoveredRating(0)}
             disabled={readonly}
+            className="p-1"
           >
-            <Star
-              className={cn(
-                sizeClasses[size],
-                'transition-colors',
-                filled
-                  ? 'fill-yellow-400 stroke-yellow-400'
-                  : 'fill-transparent stroke-gray-300'
-              )}
-            />
+            {isFilled ? (
+              <FaStar size={iconSize} className="text-yellow-500" />
+            ) : (
+              <FaRegStar size={iconSize} className="text-gray-300" />
+            )}
           </button>
         );
       })}

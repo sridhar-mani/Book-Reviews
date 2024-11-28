@@ -19,8 +19,9 @@ export function BookCard({ book, onBookUpdated }: BookCardProps) {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
+
   const averageRating =
-    book.reviews.reduce((acc, review) => acc + review.rating, 0) /
+    book.reviews.reduce((sum: number, review: any) => sum + review.rating, 0) /
     (book.reviews.length || 1);
 
   const isOwner = user?.name === book.user.name;
@@ -70,7 +71,6 @@ export function BookCard({ book, onBookUpdated }: BookCardProps) {
         </CardContent>
       </Card>
 
-      {/* Edit Book Dialog */}
       {showEditDialog && (
         <EditBookDialog
           book={book}
@@ -80,7 +80,6 @@ export function BookCard({ book, onBookUpdated }: BookCardProps) {
         />
       )}
 
-      {/* Delete Book Dialog */}
       {showDeleteDialog && (
         <DeleteBookDialog
           book={book}
