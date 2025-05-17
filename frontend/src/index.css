@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@theme {
+  /* Font stacks */
+  --font-sans: "Inter", sans-serif;
+
+  /* Primary brand color */
+  --color-primary: #6366f1;
+}
+@plugin "tailwindcss-shadcn-ui";
+@plugin "tailwindcss-animate";
+@plugin "@tailwindcss/forms"; /* optional, for form styling */
+@plugin "@tailwindcss/typography"; /* optional, for prose styling */ 
+@plugin "@tailwindcss/aspect-ratio"; /* optional, for aspect ratio utilities */
